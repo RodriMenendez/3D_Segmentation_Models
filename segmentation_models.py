@@ -26,6 +26,9 @@ class Model():
 
 
     def load_model(self):
+        """
+        Builds a model with U-Net or UNETR architecture
+        """
         if self.model_architecture == 'unet':
             self.model = models.U_Net(self.spatial_dims, self.in_channels, self.out_channels, self.channels, self.strides, self.kernel_size)
 
@@ -35,6 +38,11 @@ class Model():
             raise Exception(f'{self.model_architecture} model not supported')
 
     def load_weights(self, model_path):
+        """
+        Loads weights from a state dictionary
+
+        model_path: filepath of torch state dictionary to be loaded
+        """
         self.model.load_state_dict(torch.load(model_path))
         _ = self.model.double()
         _ = self.model.eval()
@@ -60,12 +68,25 @@ class Model():
         return image
 
     def set_image(self, image):
+        """
+        Sets the image to be used for prediction
+
+        image: can be of type str (filepath of image), torch.Tensor, or numpy.ndarray
+        """
         self.image = self.get_image(image)
 
     def set_mask(self, mask):
+        """
+        Sets the mask to be used for metric calculation
+
+        mask: can be of type str (filepath of mask), torch.Tensor, or numpy.ndarray
+        """
         self.mask = self.get_image(mask)
 
     def predict(self):
+        """
+        Predicts output of model using the image currently loaded
+        """
         with torch.no_grad():
             if self.image is None:
                 raise Exception('must set image first with self.set_image(image_path)')
@@ -75,6 +96,11 @@ class Model():
         self.prediction = evaluations.prediction(self.output)
 
     def create_plots(self, cmap='viridis'):
+        """
+        Create max intensity plots for 3D or regular plots for 2D
+
+        cmap: str or matplotlib cmap to be used for plots
+        """
         if self.spatial_dims == 3:
             prediction_plot= np.argmax(self.prediction[0, 0], axis=0)
             image_plot = np.argmax(self.image[0, 0], axis=0)
@@ -95,6 +121,12 @@ class Model():
         plt.show()
 
     def get_evals(self):
+        """
+        Calculates the confusion matrix, IoU, precision, and accuracy between the current prediction and current mask
+
+        Returns
+        evals: dictionary {confusion matrix, IoU, precision, accuracy}
+        """
         confusion_matrix = evaluations.ConfusionMatrix(self.prediction, self.mask)
         iou = evaluations.IoU(confusion_matrix)
         precision = evaluations.precision(confusion_matrix)
