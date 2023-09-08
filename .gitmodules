@@ -1,0 +1,3 @@
+[submodule "train_code"]
+	path = train_code
+	url = git@github.com:RodriMenendez/EASI_FISH_3D_U_Net.git
