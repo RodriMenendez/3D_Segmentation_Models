@@ -85,7 +85,7 @@ class Model():
 
     def predict(self):
         """
-        Predicts output of model using the image currently loaded
+        Model segmentation of currently loaded image
         """
         with torch.no_grad():
             if self.image is None:
@@ -97,7 +97,7 @@ class Model():
 
     def create_plots(self, cmap='viridis'):
         """
-        Create max intensity plots for 3D or regular plots for 2D
+        Max intensity plots for 3D, regular plots for 2D
 
         cmap: str or matplotlib cmap to be used for plots
         """
@@ -122,7 +122,7 @@ class Model():
 
     def get_evals(self):
         """
-        Calculates the confusion matrix, IoU, precision, and accuracy between the current prediction and current mask
+        Calculates the confusion matrix, IoU, precision, and accuracy of the current prediction based on the current mask
 
         Returns
         evals: dictionary {confusion matrix, IoU, precision, accuracy}
