@@ -69,7 +69,7 @@ class Model():
 
     def set_image(self, image):
         """
-        Sets the image to be used for prediction
+        Sets the image(s) to be used for prediction. 
 
         image: can be of type str (filepath of image), torch.Tensor, or numpy.ndarray
         """
@@ -77,7 +77,7 @@ class Model():
 
     def set_mask(self, mask):
         """
-        Sets the mask to be used for metric calculation
+        Sets the mask(s) to be used for metric calculation
 
         mask: can be of type str (filepath of mask), torch.Tensor, or numpy.ndarray
         """
@@ -85,7 +85,7 @@ class Model():
 
     def predict(self):
         """
-        Model segmentation of currently loaded image
+        Model segmentation of currently loaded image(s)
         """
         with torch.no_grad():
             if self.image is None:
@@ -94,6 +94,12 @@ class Model():
                 self.output = self.model(self.image)
 
         self.prediction = evaluations.prediction(self.output)
+
+    def save_prediction(self, path):
+        """
+        Save currently loaded prediction
+        """
+        torch.save(self.prediction, path)
 
     def create_plots(self, cmap='viridis'):
         """
