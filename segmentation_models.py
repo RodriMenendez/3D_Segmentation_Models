@@ -101,46 +101,34 @@ class Model():
         """
         torch.save(self.prediction, path)
 
-    def create_plots(self, cmap='viridis', alpha_range=0.9):
+    def create_plots(self, cmap='viridis'):
         """
         Plots depth index with max intensity for 3D, regular plots for 2D
 
         cmap: str or matplotlib cmap to be used for plots
         """
-        def normalize_alpha(alpha, alpha_range):
-            alpha = alpha/alpha.max()
-            alpha = alpha*alpha_range + (1-alpha_range)
-            return alpha
 
         if self.prediction.shape[0] > 1:
             for prediction in self.prediction:
                 self.create_plots(prediction.unsqueeze(0))
         else:
             if self.spatial_dims == 3:
-                prediction_alpha, prediction_plot= torch.max(self.prediction[0, 0], axis=0)
-                image_alpha, image_plot = torch.max(self.image[0, 0], axis=0)
-                image_alpha = normalize_alpha(image_alpha, alpha_range)
-                mask_alpha, mask_plot = torch.max(self.mask[0, 0], axis=0)
-                mask_alpha = normalize_alpha(mask_alpha, alpha_range)
+                prediction_plot, _ = torch.max(self.prediction[0, 0], axis=0)
+                image_plot, _ = torch.max(self.image[0, 0], axis=0)
+                mask_plot, _ = torch.max(self.mask[0, 0], axis=0)
             elif self.spatial_dims == 2:
                 prediction_plot = self.prediction[0, 0]
                 image_plot = self.image[0, 0]
                 mask_plot = self.mask[0, 0]
 
             fig, axs = plt.subplots(1, 3, figsize=(10, 10))
-            if self.spatial_dims == 3:
-                title = ' Max Intensity'
-            else:
-                title = ''
-                prediction_alpha = None
-                image_alpha = None
-                mask_alpha = None
+            title = ' Max Intensity' if self.spatial_dims==3 else ''
 
-            axs[0].imshow(prediction_plot, cmap=cmap, alpha=prediction_alpha)
+            axs[0].imshow(prediction_plot, cmap=cmap)
             axs[0].set_title('Prediction'+title)
-            axs[1].imshow(image_plot, cmap=cmap, alpha=image_alpha)
+            axs[1].imshow(image_plot, cmap=cmap)
             axs[1].set_title('Input'+title)
-            axs[2].imshow(mask_plot, cmap=cmap, alpha=mask_alpha)
+            axs[2].imshow(mask_plot, cmap=cmap)
             axs[2].set_title('Mask'+title)
             plt.show()
 
